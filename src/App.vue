@@ -10,25 +10,24 @@
           data-target="#navbarResponsive"
           aria-controls="navbarResponsive"
           aria-expanded="false"
-          aria-label="Toggle navigation">
+          aria-label="Toggle navigation"
+        >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
+
           <ul class="navbar-nav ml-auto">
-            <li class="nav-item active">
+            <li v-if="user_id === null" class="nav-item active">
               <router-link class="nav-link" to="/login">Login</router-link>
             </li>
-            <li class="nav-item">
+            <li v-if="user_id === null" class="nav-item">
               <router-link class="nav-link" to="/register"
                 >Register</router-link
               >
             </li>
-            <!--            <li class="nav-item">-->
-            <!--              <a class="nav-link" href="#">Services</a>-->
-            <!--            </li>-->
-            <!--            <li class="nav-item">-->
-            <!--              <a class="nav-link" href="#">Contact</a>-->
-            <!--            </li>-->
+            <li v-if="user_id !== null" class="nav-item active">
+              <router-link class="nav-link" to="/logout">Logout</router-link>
+            </li>
           </ul>
         </div>
       </div>
@@ -36,6 +35,44 @@
     <router-view />
   </div>
 </template>
+
+<script>
+// @ is an alias to /src
+
+import axios from "axios";
+import router from "./router";
+
+export default {
+  name: "App",
+  data() {
+    return {
+      user_id: null
+    };
+  },
+
+  created() {
+    axios({
+      withCredentials: true,
+      method: "GET",
+      url: "http://localhost/pokemon_api/system.php/me"
+    })
+      .then(response => {
+        if (response.data) {
+          console.log(response);
+          if(response.data.status === "OK"){
+            this.user_id = response.data.user_id;
+            router.push({ path: "/" });
+          }
+        } else {
+          router.push({ path: "/login" });
+        }
+      })
+      .catch(function(error) {
+        console.log(error);
+      });
+  }
+};
+</script>
 
 <style>
 #app {

@@ -25,7 +25,9 @@
             />
           </div>
           <div class="row">
-            <strong><p class="text-danger">{{errorMessage}}</p></strong>
+            <strong
+              ><p class="text-danger">{{ errorMessage }}</p></strong
+            >
           </div>
           <button type="submit" class="btn btn-primary">
             Submit
@@ -56,14 +58,15 @@ export default {
       let self = this;
       if (this.input.login !== "" && this.input.password !== "") {
         axios({
+          // withCredentials:true,
           method: "POST",
           url: "http://localhost/pokemon_api/system.php/register",
           data: this.input
         })
           .then(function(response) {
-            if(response.data.status ==="ERROR"){
+            if (response.data.status === "ERROR") {
               self.errorMessage = response.data.message;
-            }else{
+            } else {
               router.push({ path: "/" });
             }
           })
