@@ -24,15 +24,8 @@
               v-model="input.password"
             />
           </div>
-          <div class="form-group form-check">
-            <input
-              type="checkbox"
-              class="form-check-input"
-              id="exampleCheck1"
-            />
-            <label class="form-check-label" for="exampleCheck1"
-              >Check me out</label
-            >
+          <div class="row">
+            <strong><p class="text-danger">{{errorMessage}}</p></strong>
           </div>
           <button type="submit" class="btn btn-primary">
             Submit
@@ -45,6 +38,7 @@
 
 <script>
 import axios from "axios";
+import router from "../router";
 
 export default {
   name: "Register",
@@ -53,11 +47,13 @@ export default {
       input: {
         login: "",
         password: ""
-      }
+      },
+      errorMessage: ""
     };
   },
   methods: {
     register() {
+      let self = this;
       if (this.input.login !== "" && this.input.password !== "") {
         axios({
           method: "POST",
@@ -65,18 +61,17 @@ export default {
           data: this.input
         })
           .then(function(response) {
-            console.log(response.data);
-            if (response.data[0].status === 1) {
-              alert("Login Successfully");
-            } else {
-              alert("User does not exist");
+            if(response.data.status ==="ERROR"){
+              self.errorMessage = response.data.message;
+            }else{
+              router.push({ path: "/" });
             }
           })
           .catch(function(error) {
             console.log(error);
           });
       } else {
-        alert("Please enter username & password");
+        self.errorMessage = "Please enter login and password";
       }
     }
   }

@@ -52,7 +52,7 @@ export default {
           data: this.input
         })
           .then(function(response) {
-            console.log(response.data);
+            console.log(response.data.message);
             if (response.data.status === "OK") {
               router.push({path:'/'})
             } else {
