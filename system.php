@@ -16,10 +16,10 @@ if($_SERVER['REQUEST_METHOD'] === "OPTIONS") {
 switch ($request) {
     case ROUTE_PATHS['login']:
 
-        $email = $input["email"];
+        $login = $input["login"];
         $result = $db->query('SELECT * FROM user')->fetchAll();
-        $stmt = $db->prepare("SELECT * FROM user WHERE email = :email");
-        $stmt->bindParam(':email',$email,PDO::PARAM_STR);
+        $stmt = $db->prepare("SELECT * FROM user WHERE login = :login");
+        $stmt->bindParam(':login',$login,PDO::PARAM_STR);
 
         $stmt -> execute();
         /* fetch all results */
@@ -38,10 +38,10 @@ switch ($request) {
 
     case ROUTE_PATHS['register']:
         $password = $input["password"];
-        $email = $input["email"];
+        $login = $input["login"];
         $hash = password_hash($password, PASSWORD_DEFAULT);
 
-        $query = "INSERT INTO user (email,hashed_password) VALUES ('$email','$hash')";
+        $query = "INSERT INTO user (login,hashed_password) VALUES ('$login','$hash')";
         if ($db->exec($query)) {
             $data = ['status' => "OK", 'message'=>"Data inserted successfully."];
             echo json_encode($data);

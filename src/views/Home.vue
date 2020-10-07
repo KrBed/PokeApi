@@ -6,13 +6,9 @@
 
 <script>
 // @ is an alias to /src
-import HelloWorld from "@/components/HelloWorld.vue";
 
 export default {
   name: "Home",
-  components: {
-    HelloWorld
-  },
   created() {
     // strzał pod /me zwrócić 200 z danymi lub 401
   }

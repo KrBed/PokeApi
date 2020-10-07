@@ -1,17 +1,17 @@
 <template>
-  <div id="login" class="offset-4 mt-5">
+  <div id="login-template" class="offset-4 mt-5">
     <div class="card col-4">
       <div class="card-body">
         <h5 class="card-title">Login to your account</h5>
         <form @submit.prevent="login">
           <div class="form-group">
-            <label for="email">Email address</label>
+            <label for="login">Login</label>
             <input
-              type="email"
+              type="text"
               class="form-control"
-              id="email"
-              aria-describedby="emailHelp"
-              v-model="input.email"
+              id="login"
+              aria-describedby="loginHelp"
+              v-model="input.login"
             />
           </div>
           <div class="form-group">
@@ -38,14 +38,14 @@ export default {
   data() {
     return {
       input: {
-        email: "",
+        login: "",
         password: ""
       }
     };
   },
   methods: {
     login() {
-      if (this.input.email !== "" && this.input.password !== "") {
+      if (this.input.login !== "" && this.input.password !== "") {
         axios({
           method: "POST",
           url: "http://localhost/pokemon_api/system.php/login",
