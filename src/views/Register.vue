@@ -58,7 +58,7 @@ export default {
       let self = this;
       if (this.input.login !== "" && this.input.password !== "") {
         axios({
-          // withCredentials:true,
+          withCredentials: true,
           method: "POST",
           url: "http://localhost/pokemon_api/system.php/register",
           data: this.input

@@ -15,15 +15,14 @@
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarResponsive">
-
           <ul class="navbar-nav ml-auto">
             <li v-if="user_id === null" class="nav-item active">
               <router-link class="nav-link" to="/login">Login</router-link>
             </li>
             <li v-if="user_id === null" class="nav-item">
               <router-link class="nav-link" to="/register"
-                >Register</router-link
-              >
+                >Register
+              </router-link>
             </li>
             <li v-if="user_id !== null" class="nav-item active">
               <router-link class="nav-link" to="/logout">Logout</router-link>
@@ -49,27 +48,41 @@ export default {
       user_id: null
     };
   },
-
-  created() {
-    axios({
-      withCredentials: true,
-      method: "GET",
-      url: "http://localhost/pokemon_api/system.php/me"
-    })
-      .then(response => {
-        if (response.data) {
-          console.log(response);
-          if(response.data.status === "OK"){
-            this.user_id = response.data.user_id;
-            router.push({ path: "/" });
-          }
-        } else {
-          router.push({ path: "/login" });
-        }
+  methods: {
+    checkUserId() {
+      axios({
+        withCredentials: true,
+        method: "GET",
+        url: "http://localhost/pokemon_api/system.php/me"
       })
-      .catch(function(error) {
-        console.log(error);
-      });
+        .then(response => {
+          if (response.data) {
+            if (response.data.status === "OK") {
+              this.user_id = response.data.user_id;
+              if (this.$route.path !== "/") {
+                router.push({ path: "/" });
+              }
+            } else {
+              this.user_id = null;
+              if (this.$route.path === "/") {
+                router.push({ path: "/login" });
+              }
+            }
+          }
+        })
+
+        .catch(function(error) {
+          console.log(error);
+        });
+    }
+  },
+  watch: {
+    $route() {
+      this.checkUserId();
+    }
+  },
+  created() {
+    this.checkUserId();
   }
 };
 </script>
