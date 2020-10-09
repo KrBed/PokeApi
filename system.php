@@ -181,7 +181,6 @@ switch ($request) {
         $query = prepareActionQuery($db, $sql, $action);
         $actions = $query->execute();
 
-        // prepare creature action
         if ($response !== null) {
             $moves = count($response["moves"]);
             $picture = $response["sprites"]["front_default"];
@@ -190,6 +189,9 @@ switch ($request) {
             }
             $creature = ['name' => $response["name"], 'picture' => $picture, 'moves' => $moves];
             echo json_encode($creature, JSON_THROW_ON_ERROR);
+        }else{
+            $creature = null ;
+            echo json_encode(['creature'=>$creature,'message'=>'Result Not Found'], JSON_THROW_ON_ERROR);
         }
 // getting all actions function
         break;
@@ -201,6 +203,7 @@ switch ($request) {
     case ROUTE_PATHS["logout"]:
         session_destroy();
         echo json_encode(["status" => "OK"], JSON_THROW_ON_ERROR);
+        break;
     case ROUTE_PATHS["delete"] :
         $action_id = $input;
         $action = "SELECT * FROM action WHERE id == :action_id";
@@ -212,8 +215,6 @@ switch ($request) {
             $sql = "DELETE FROM action WHERE id = :action_id";
             $query = prepareSingleActionQuery($db, $sql, $action_id);
             $query->execute();
-
-
         }
         break;
 
