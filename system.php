@@ -52,18 +52,6 @@ function sendResponseMessage(string $status, string $message): void
     echo json_encode($data, JSON_THROW_ON_ERROR);
 }
 
-session_start();
-
-$db = new PDO('sqlite:' . PATH_TO_SQLITE_DB);
-
-$request = trim($_SERVER['REQUEST_URI'], '/');
-if (strtoupper($_SERVER["REQUEST_METHOD"]) === "POST") {
-    $input = json_decode(file_get_contents('php://input'), True, 4, JSON_THROW_ON_ERROR);
-}
-if ($_SERVER['REQUEST_METHOD'] === "OPTIONS") {
-    return; // hendled by APACHE;
-}
-
 /**
  * @param $input
  * @param PDO $db
@@ -118,6 +106,9 @@ function getPokemonFromApi($search)
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
     $curl_response = curl_exec($curl);
+    if($curl_response === false){
+        sendResponseMessage("ERROR",curl_error($curl));
+    }
     curl_close($curl);
     if ($curl_response === "Not Found") {
         return null;
@@ -146,6 +137,76 @@ function prepareSingleActionQuery(PDO $db, string $action, $action_id)
     return  $query;
 }
 
+/**
+ * @param $input
+ * @param PDO $db
+ */
+function deleteAction($input, PDO $db): void
+{
+    $action_id = $input;
+    $action = "SELECT * FROM action WHERE id == :action_id";
+    $query = prepareSingleActionQuery($db, $action, $action_id);
+    $query->execute();
+    $result = $query->fetch();
+
+    if ($result["user_id"] === $_SESSION["user_id"]) {
+        $sql = "DELETE FROM action WHERE id = :action_id";
+        $query = prepareSingleActionQuery($db, $sql, $action_id);
+        $query->execute();
+    }
+}
+session_start();
+
+$db = new PDO('sqlite:' . PATH_TO_SQLITE_DB);
+
+$request = trim($_SERVER['REQUEST_URI'], '/');
+if (strtoupper($_SERVER["REQUEST_METHOD"]) === "POST") {
+    $input = json_decode(file_get_contents('php://input'), True, 4, JSON_THROW_ON_ERROR);
+}
+if ($_SERVER['REQUEST_METHOD'] === "OPTIONS") {
+    return; // hendled by APACHE;
+}
+
+/**
+ * @param $input
+ * @param PDO $db
+ * @throws Exception
+ */
+function getSearchResult($input, PDO $db): void
+{
+    $search = $input["search"];
+
+    $action = [];
+    $action['user_id'] = $_SESSION['user_id'];
+    $action['searched'] = $search;
+    $now = new DateTime('now');
+    $action['date_time'] = $now->format('Y.m.d H:i:s');
+    $response = getPokemonFromApi($search);
+
+    if ($response === null) {
+        $action['search_result'] = "Not Found";
+    } else {
+        $action['search_result'] = "Success";
+    }
+    $sql = "INSERT INTO 'action'('date_time','searched','search_result','user_id') VALUES (:date_time,:searched,:search_result,:user_id)";
+
+    $query = prepareActionQuery($db, $sql, $action);
+    $actions = $query->execute();
+
+    if ($response !== null) {
+        $moves = count($response["moves"]);
+        $picture = $response["sprites"]["front_default"];
+        if ($picture === null) {
+            $picture = "https://placekitten.com/200/300";
+        }
+        $creature = ['name' => $response["name"], 'picture' => $picture, 'moves' => $moves];
+        echo json_encode($creature, JSON_THROW_ON_ERROR);
+    } else {
+        $creature = null;
+        echo json_encode(['creature' => $creature, 'message' => 'Result Not Found'], JSON_THROW_ON_ERROR);
+    }
+}
+
 switch ($request) {
     case ROUTE_PATHS['me']:
         if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
@@ -162,38 +223,7 @@ switch ($request) {
         registerUser($input, $db);
         break;
     case ROUTE_PATHS['search']:
-        $search = $input["search"];
-
-        $action = [];
-        $action['user_id'] = $_SESSION['user_id'];
-        $action['searched'] = $search;
-        $now = new DateTime('now');
-        $action['date_time'] = $now->format('Y.m.d H:i:s');
-        $response = getPokemonFromApi($search);
-
-        if ($response === null) {
-            $action['search_result'] = "Not Found";
-        } else {
-            $action['search_result'] = "Success";
-        }
-        $sql = "INSERT INTO 'action'('date_time','searched','search_result','user_id') VALUES (:date_time,:searched,:search_result,:user_id)";
-
-        $query = prepareActionQuery($db, $sql, $action);
-        $actions = $query->execute();
-
-        if ($response !== null) {
-            $moves = count($response["moves"]);
-            $picture = $response["sprites"]["front_default"];
-            if ($picture === null) {
-                $picture = "https://placekitten.com/200/300";
-            }
-            $creature = ['name' => $response["name"], 'picture' => $picture, 'moves' => $moves];
-            echo json_encode($creature, JSON_THROW_ON_ERROR);
-        }else{
-            $creature = null ;
-            echo json_encode(['creature'=>$creature,'message'=>'Result Not Found'], JSON_THROW_ON_ERROR);
-        }
-// getting all actions function
+        getSearchResult($input, $db);
         break;
     case ROUTE_PATHS['all_actions']:
         $actions = getAllActions($db);
@@ -205,17 +235,7 @@ switch ($request) {
         echo json_encode(["status" => "OK"], JSON_THROW_ON_ERROR);
         break;
     case ROUTE_PATHS["delete"] :
-        $action_id = $input;
-        $action = "SELECT * FROM action WHERE id == :action_id";
-        $query = prepareSingleActionQuery($db, $action, $action_id);
-        $query->execute();
-        $result = $query->fetch();
-
-        if($result["user_id"] === $_SESSION["user_id"]){
-            $sql = "DELETE FROM action WHERE id = :action_id";
-            $query = prepareSingleActionQuery($db, $sql, $action_id);
-            $query->execute();
-        }
+        deleteAction($input, $db);
         break;
 
 

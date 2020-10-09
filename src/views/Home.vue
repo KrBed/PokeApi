@@ -42,7 +42,7 @@
               </div>
             </div>
             <div v-if="!searchResult" class="pt-5">
-              <h2>{{ searchMessage }}</h2>
+              <h2 class= "text-center text-secondary">{{ searchMessage }}</h2>
             </div>
           </div>
         </div>
