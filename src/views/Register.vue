@@ -1,6 +1,6 @@
 <template>
-  <div id="register-template" class="offset-4 mt-5">
-    <div class="card col-4">
+  <div id="register-template" class="mt-5">
+    <div class="card col-12 col-sm-6 offset-sm-3 offset-xl-5 col-xl-2">
       <div class="card-body">
         <h5 class="card-title">Create new Account</h5>
         <form @submit.prevent="register">
@@ -84,5 +84,6 @@ export default {
 <style scoped>
 button {
   width: 100%;
+  background-color: #726ae6;
 }
 </style>

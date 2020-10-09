@@ -81,5 +81,6 @@ export default {
 <style scoped>
 button {
   width: 100%;
+  background-color: #726ae6;
 }
 </style>

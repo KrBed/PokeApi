@@ -1,8 +1,8 @@
 <template>
   <div id="app">
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark static-top">
+    <nav class="navbar navbar-expand-lg static-top custom-navbar">
       <div class="container-fluid">
-        <a class="navbar-brand" href="#">Pokemon Api</a>
+        <a class="navbar-brand text-light" href="#">Pokemon Api</a>
         <button
           class="navbar-toggler"
           type="button"
@@ -17,15 +17,15 @@
         <div class="collapse navbar-collapse" id="navbarResponsive">
           <ul class="navbar-nav ml-auto">
             <li v-if="user_id === null" class="nav-item active">
-              <router-link class="nav-link" to="/login">Login</router-link>
+              <router-link class="nav-link text-light" to="/login">Login</router-link>
             </li>
             <li v-if="user_id === null" class="nav-item">
-              <router-link class="nav-link" to="/register"
+              <router-link class="nav-link text-light" to="/register"
                 >Register
               </router-link>
             </li>
             <li v-if="user_id !== null" class="nav-item active">
-              <router-link class="nav-link" to="/logout">Logout</router-link>
+              <router-link class="nav-link text-light" to="/logout">Logout</router-link>
             </li>
           </ul>
         </div>
@@ -102,5 +102,8 @@ export default {
 
 #nav a.router-link-exact-active {
   color: #42b983;
+}
+.custom-navbar{
+  background-color: #726ae6;
 }
 </style>

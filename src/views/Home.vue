@@ -1,10 +1,12 @@
 <template>
   <div class="">
-    <div class="container-fluid pt-4 h-100">
+    <div class="container-fluid pt-4">
       <div class="row actions-list">
-        <div class="col-12 col-md-5 d-flex flex-column align-items-center" style="">
+        <div class="col-12 col-md-5 d-flex flex-column align-items-center">
           <div>
-            <h2 class="text-center">Enter creature name to search</h2>
+            <h2 class="text-center text-secondary pb-2">
+              Enter creature name to search
+            </h2>
             <form @submit.prevent="search">
               <div class="form-row">
                 <div class="offset-1 col-8">
@@ -39,74 +41,39 @@
                 <h5>Moves : {{ creature.moves }}</h5>
               </div>
             </div>
-            <div v-if = "!searchResult"  class="pt-5">
-              <h2>{{searchMessage}}</h2>
+            <div v-if="!searchResult" class="pt-5">
+              <h2>{{ searchMessage }}</h2>
             </div>
           </div>
         </div>
 
         <div class="col ">
-          <div class="card  overflow-auto" style="height:90%">
-
-            <div class="card-body" style="overflow-y:auto;">
-              <table class="table table-striped overflow-auto">
-                <thead>
-                <tr>
-                  <th scope="col">Login</th>
-                  <th scope="col">Searched</th>
-                  <th scope="col">Search result</th>
-                  <th scope="col">Date</th>
-                  <th scope="col">Action</th>
-                </tr>
-                </thead>
-                <tbody style="overflow-y:auto;">
-                <tr v-for="item in actions" :key="item.id">
-                  <td>{{ item.login }}</td>
-                  <td>{{ item.searched }}</td>
-                  <td>{{ item.search_result }}</td>
-                  <td>{{ item.date_time }}</td>
-                  <td class="text-danger">
-                    <a
-                      v-if="item.user_id === user_id"
-                      @click="deleteAction(item.id)"
+          <table class="table table-striped table-hover table-bordered">
+            <thead >
+              <tr class="custom-header">
+                <th scope="col" class="text-light">Login</th>
+                <th scope="col" class="text-light">Searched</th>
+                <th scope="col" class="text-light">Search result</th>
+                <th scope="col" class="text-light">Date</th>
+                <th scope="col" class="text-light">Action</th>
+              </tr>
+            </thead>
+            <tbody style="overflow-y:scroll;" class="overflow-auto">
+              <tr v-for="item in actions" :key="item.id">
+                <td>{{ item.login }}</td>
+                <td>{{ item.searched }}</td>
+                <td>{{ item.search_result }}</td>
+                <td>{{ item.date_time }}</td>
+                <td class="text-danger">
+                  <a
+                    v-if="item.user_id === user_id"
+                    @click="deleteAction(item.id)"
                     ><i class="fa fa-trash"
-                    /></a>
-                  </td>
-                </tr>
-                </tbody>
-              </table>
-
-            </div>
-          </div>
-
-
-
-<!--          <table class="table table-striped overflow-auto">-->
-<!--            <thead>-->
-<!--              <tr>-->
-<!--                <th scope="col">Login</th>-->
-<!--                <th scope="col">Searched</th>-->
-<!--                <th scope="col">Search result</th>-->
-<!--                <th scope="col">Date</th>-->
-<!--                <th scope="col">Action</th>-->
-<!--              </tr>-->
-<!--            </thead>-->
-<!--            <tbody style="overflow-y:auto;">-->
-<!--              <tr v-for="item in actions" :key="item.id">-->
-<!--                <td>{{ item.login }}</td>-->
-<!--                <td>{{ item.searched }}</td>-->
-<!--                <td>{{ item.search_result }}</td>-->
-<!--                <td>{{ item.date_time }}</td>-->
-<!--                <td class="text-danger">-->
-<!--                  <a-->
-<!--                    v-if="item.user_id === user_id"-->
-<!--                    @click="deleteAction(item.id)"-->
-<!--                    ><i class="fa fa-trash"-->
-<!--                  /></a>-->
-<!--                </td>-->
-<!--              </tr>-->
-<!--            </tbody>-->
-<!--          </table>-->
+                  /></a>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -149,10 +116,10 @@ export default {
       })
         .then(response => {
           console.log(response.data);
-          if(response.data.creature !== null){
+          if (response.data.creature !== null) {
             this.creature = response.data;
             this.searchResult = true;
-          }else{
+          } else {
             this.searchResult = false;
             this.creature = null;
             this.searchMessage = response.data.message;
@@ -195,5 +162,14 @@ export default {
 };
 </script>
 <style scoped>
+  .custom-header{
+    background-color: #726ae6;
+  }
+  button{
+    background-color: #726ae6;
+  }
+  .table-striped tbody tr:nth-of-type(odd) {
+    background-color:  rgba(72, 113, 248, 0.068);
+  }
 
 </style>
